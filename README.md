@@ -2,6 +2,12 @@
 
 An OJS plugin that **collapses the left menu of the editorial backend to its icons**, so that the dashboards, the workflow and the settings have more room on smaller screens. A click on an icon opens the menu as a **drawer over the page**, which closes again afterwards. Counts in the menu's names, such as `My dossiers (2)`, become **badges** on the icons.
 
+| Collapsed | Drawer open (after a click on the Settings icon) |
+| --- | --- |
+| ![The left menu collapsed to a column of icons, with count badges on two icons](dev/screenshots/collapsed.png) | ![The full menu open as a drawer over the page](dev/screenshots/drawer.png) |
+
+The screenshots show OJS 3.5's menu component with sample entries, including two from other plugins with counts (*My dossiers*, *Editor assignments*) and one with an icon OJS doesn't know (*Content*, shown as "C").
+
 ## What it does
 
 - **Collapsed menu.** The menu (about 21rem wide) becomes a column of icons (3.5rem). Each icon shows the entry's name as a tooltip. Entries without an icon, or with an icon OJS doesn't know, show the first letter of their name in a circle. The icon of the section that contains the current page is marked with a bar.
