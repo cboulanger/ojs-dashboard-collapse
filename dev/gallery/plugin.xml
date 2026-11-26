@@ -1,0 +1,15 @@
+	<plugin category="generic" product="dashboardCollapse">
+		<name locale="en">Collapsible Dashboard Menu</name>
+		<name locale="en_US">Collapsible Dashboard Menu</name>
+		<homepage>https://github.com/cboulanger/ojs-dashboard-collapse</homepage>
+		<summary locale="en">Collapses the left menu of the editorial backend to its icons, so that pages have more room on smaller screens. A click on an icon opens the menu as a drawer over the page; counts in the menu become badges on the icons.</summary>
+		<summary locale="en_US">Collapses the left menu of the editorial backend to its icons, so that pages have more room on smaller screens. A click on an icon opens the menu as a drawer over the page; counts in the menu become badges on the icons.</summary>
+		<description locale="en"><![CDATA[@DESCRIPTION@]]></description>
+		<description locale="en_US"><![CDATA[@DESCRIPTION@]]></description>
+		<maintainer>
+			<name>Christian Boulanger</name>
+			<institution>Max Planck Institute for Legal History and Legal Theory</institution>
+			<email>info@bibliograph.org</email>
+		</maintainer>
+@RELEASES@
+	</plugin>
