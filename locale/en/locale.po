@@ -1,0 +1,19 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "plugins.generic.dashboardCollapse.displayName"
+msgstr "Collapsible Dashboard Menu"
+
+msgid "plugins.generic.dashboardCollapse.description"
+msgstr "Collapses the left menu of the editorial backend to its icons, so that the pages have more room on smaller screens. A click on an icon opens the menu over the page; it closes again after a link is chosen. Counts in the menu, such as \"(2)\", are shown as badges on the icons. The menu can be kept open with the button at its top."
+
+msgid "plugins.generic.dashboardCollapse.keepOpen"
+msgstr "Keep the menu open"
+
+msgid "plugins.generic.dashboardCollapse.collapse"
+msgstr "Collapse the menu to icons"

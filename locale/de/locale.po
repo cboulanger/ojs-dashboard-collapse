@@ -1,0 +1,19 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "plugins.generic.dashboardCollapse.displayName"
+msgstr "Einklappbares Dashboard-Menü"
+
+msgid "plugins.generic.dashboardCollapse.description"
+msgstr "Klappt das linke Menü der Redaktionsoberfläche auf seine Symbole ein, damit die Seiten auf kleineren Bildschirmen mehr Platz haben. Ein Klick auf ein Symbol öffnet das Menü über der Seite; nach der Wahl eines Links schließt es sich wieder. Zahlen im Menü wie „(2)“ erscheinen als kleine Zähler an den Symbolen. Mit der Schaltfläche oben im Menü bleibt es geöffnet."
+
+msgid "plugins.generic.dashboardCollapse.keepOpen"
+msgstr "Menü geöffnet lassen"
+
+msgid "plugins.generic.dashboardCollapse.collapse"
+msgstr "Menü auf Symbole einklappen"
