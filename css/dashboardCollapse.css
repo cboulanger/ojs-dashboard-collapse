@@ -8,6 +8,7 @@
  * PanelMenu; its parts are found by PrimeVue's data-pc-* attributes and by the
  * structure of the ui-library's SideMenu:
  *   header link: [badge span[slot]] [icon span] [name span, no class] [arrow span]
+ * Items of submenus are the same without icon and arrow.
  */
 
 html.dashboardCollapse {
@@ -124,6 +125,16 @@ html.dashboardCollapse:not(.dashboardCollapse--pinned):not(.dashboardCollapse--o
 	line-height: 1;
 }
 
+/* Badges after the name (OJS puts them first): icon, name, badge, arrow */
+html.dashboardCollapse #app-nav [data-pc-name="panelmenu"] a > span[slot] {
+	order: 1;
+	margin-inline: 0.25rem 0;
+}
+
+html.dashboardCollapse #app-nav [data-pc-name="panelmenu"] a > span:not([class]) ~ span:not([slot]) {
+	order: 2;
+}
+
 /* The count as a badge on the icon */
 html.dashboardCollapse:not(.dashboardCollapse--pinned):not(.dashboardCollapse--open) #app-nav [data-pc-section="header"] a > span[slot] {
 	position: absolute;
@@ -147,6 +158,40 @@ html.dashboardCollapse:not(.dashboardCollapse--pinned):not(.dashboardCollapse--o
 	box-shadow: inset -4px 0 0 var(--dashboardCollapse-primary);
 }
 
+/* The name of an icon on hover, beside the collapsed menu */
+.dashboardCollapse__tooltip {
+	position: fixed;
+	z-index: 1000;
+	max-width: 20rem;
+	padding: 0.4rem 0.75rem;
+	border-radius: 0.25rem;
+	background: var(--color-primary-dark, #002c40);
+	color: #fff;
+	font-size: 0.9375rem;
+	font-weight: 700;
+	line-height: 1.3;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3);
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	transform: translate(-0.25rem, -50%);
+	transition: opacity 0.1s ease-out, transform 0.1s ease-out, visibility 0s linear 0.1s;
+}
+
+.dashboardCollapse__tooltip--rtl {
+	transform: translate(0.25rem, -50%);
+}
+
+.dashboardCollapse__tooltip--visible {
+	opacity: 1;
+	visibility: visible;
+	transform: translate(0, -50%);
+	transition: opacity 0.1s ease-out, transform 0.1s ease-out;
+}
+
 /* Drawer open: the whole menu over the page */
 html.dashboardCollapse--open:not(.dashboardCollapse--pinned) #app-nav > [data-pc-name="panelmenu"] {
 	width: min(var(--dashboardCollapse-drawer), calc(100vw - 1rem));
@@ -160,6 +205,11 @@ html.dashboardCollapse--open:not(.dashboardCollapse--pinned) [dir="rtl"] #app-na
 
 @media (prefers-reduced-motion: reduce) {
 	html.dashboardCollapse #app-nav > [data-pc-name="panelmenu"] {
+		transition: none;
+	}
+
+	.dashboardCollapse__tooltip,
+	.dashboardCollapse__tooltip--visible {
 		transition: none;
 	}
 }

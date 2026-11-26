@@ -17,6 +17,10 @@
  * link just follows it), or when the keyboard focus enters the menu. It closes
  * when a link in it is chosen, the mouse leaves it, on a click outside or Escape,
  * or when the focus moves elsewhere on the page.
+ *
+ * While collapsed, hovering an icon (or the toggle button) shows its name in a
+ * tooltip beside it (one element in <body>, so the menu's overflow doesn't clip
+ * it), instead of the browser's small title tooltip.
  */
 (function () {
 	'use strict';
@@ -59,6 +63,7 @@
 	const isCollapsed = () => !root.classList.contains('dashboardCollapse--pinned');
 	const isOpen = () => root.classList.contains('dashboardCollapse--open');
 	const nav = () => document.querySelector(NAV);
+	const TOOLTIP_ATTR = 'data-dashboard-collapse-tooltip';
 
 	let closeTimer = null;
 	let pointerDown = false;
@@ -73,6 +78,7 @@
 		if (isCollapsed()) {
 			root.classList.add('dashboardCollapse--open');
 		}
+		hideTooltip();
 	}
 
 	function close() {
@@ -80,10 +86,44 @@
 		root.classList.remove('dashboardCollapse--open');
 	}
 
+	let tooltip = null;
+	let tooltipFor = null;
+
+	function showTooltip(target) {
+		const label = target.getAttribute(TOOLTIP_ATTR);
+		if (!label) {
+			hideTooltip();
+			return;
+		}
+		if (!tooltip) {
+			tooltip = document.createElement('div');
+			tooltip.className = 'dashboardCollapse__tooltip';
+			tooltip.setAttribute('aria-hidden', 'true'); // the names are in the menu for screen readers
+			document.body.appendChild(tooltip);
+		}
+		tooltipFor = target;
+		tooltip.textContent = label;
+		const rect = target.getBoundingClientRect();
+		const rtl = getComputedStyle(target).direction === 'rtl';
+		tooltip.classList.toggle('dashboardCollapse__tooltip--rtl', rtl);
+		tooltip.style.top = `${rect.top + rect.height / 2}px`;
+		tooltip.style.left = rtl ? '' : `${rect.right + 8}px`;
+		tooltip.style.right = rtl ? `${document.documentElement.clientWidth - rect.left + 8}px` : '';
+		tooltip.classList.add('dashboardCollapse__tooltip--visible');
+	}
+
+	function hideTooltip() {
+		tooltipFor = null;
+		if (tooltip) {
+			tooltip.classList.remove('dashboardCollapse__tooltip--visible');
+		}
+	}
+
 	function setPinned(pinned) {
 		writePinned(pinned);
 		close();
 		root.classList.toggle('dashboardCollapse--pinned', pinned);
+		hideTooltip();
 		decorate();
 	}
 
@@ -113,8 +153,8 @@
 			const name = (label ? label.textContent : header.getAttribute('aria-label') || '').trim();
 			const badge = link.querySelector(':scope > span[slot]');
 			const tooltip = badge ? `${name} (${badge.textContent.trim()})` : name;
-			if (header.getAttribute('title') !== tooltip) {
-				header.setAttribute('title', tooltip);
+			if (header.getAttribute(TOOLTIP_ATTR) !== tooltip) {
+				header.setAttribute(TOOLTIP_ATTR, tooltip);
 			}
 			// An icon that is missing or unknown to OJS (empty): show the first letter instead
 			const icon = Array.from(link.children).find((child) => child !== label && child !== badge && child.tagName === 'SPAN' && child.nextElementSibling === label);
@@ -147,7 +187,7 @@
 		const label = isCollapsed() ? text.keepOpen : text.collapse;
 		if (button.getAttribute('aria-label') !== label) {
 			button.setAttribute('aria-label', label);
-			button.setAttribute('title', label);
+			button.setAttribute(TOOLTIP_ATTR, label);
 			button.setAttribute('aria-pressed', isCollapsed() ? 'false' : 'true');
 		}
 	}
@@ -257,7 +297,25 @@
 		if (closeTimer && el && el.contains(event.target)) {
 			cancelClose();
 		}
+		// Tooltip: only while the menu is collapsed to icons, and only for the mouse
+		const target = event.target instanceof Element && el && el.contains(event.target) ? event.target.closest(`[${TOOLTIP_ATTR}]`) : null;
+		if (target && event.pointerType === 'mouse' && isCollapsed() && !isOpen()) {
+			if (target !== tooltipFor) {
+				showTooltip(target);
+			}
+		} else if (tooltipFor) {
+			hideTooltip();
+		}
 	});
+
+	document.addEventListener('pointerout', (event) => {
+		if (tooltipFor && (!event.relatedTarget || !tooltipFor.contains(event.relatedTarget))) {
+			hideTooltip();
+		}
+	});
+
+	window.addEventListener('scroll', hideTooltip, true);
+	window.addEventListener('blur', hideTooltip);
 
 	// Vue draws the menu after this script ran, and redraws it when it changes
 	let scheduled = false;

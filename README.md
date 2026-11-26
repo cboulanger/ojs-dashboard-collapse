@@ -2,18 +2,18 @@
 
 An OJS plugin that **collapses the left menu of the editorial backend to its icons**, so that the dashboards, the workflow and the settings have more room on smaller screens. A click on an icon opens the menu as a **drawer over the page**, which closes again afterwards. Counts in the menu's names, such as `My dossiers (2)`, become **badges** on the icons.
 
-| Collapsed | Drawer open (after a click on the Settings icon) |
+| Collapsed, mouse over the *My dossiers* icon | Drawer open (after a click on the Settings icon) |
 | --- | --- |
-| ![The left menu collapsed to a column of icons, with count badges on two icons](dev/screenshots/collapsed.png) | ![The full menu open as a drawer over the page](dev/screenshots/drawer.png) |
+| ![The left menu collapsed to a column of icons; the My dossiers icon has a count badge and a tooltip with its name](dev/screenshots/collapsed.png) | ![The full menu open as a drawer over the page](dev/screenshots/drawer.png) |
 
-The screenshots show OJS 3.5's menu component with sample entries, including two from other plugins with counts (*My dossiers*, *Editor assignments*) and one with an icon OJS doesn't know (*Content*, shown as "C").
+The screenshots show an OJS 3.5 test journal with [Dossier Manager](https://github.com/cboulanger/ojs-dossier-manager) and [Book Review Manager](https://github.com/cboulanger/ojs-book-review-manager) installed; *My dossiers (1)* is a menu entry with a count from another plugin, shown as a badge.
 
 ## What it does
 
-- **Collapsed menu.** The menu (about 21rem wide) becomes a column of icons (3.5rem). Each icon shows the entry's name as a tooltip. Entries without an icon, or with an icon OJS doesn't know, show the first letter of their name in a circle. The icon of the section that contains the current page is marked with a bar.
+- **Collapsed menu.** The menu (about 21rem wide) becomes a column of icons (3.5rem). Hovering an icon shows the entry's name (with its count, if any) in a tooltip beside the menu. Entries without an icon, or with an icon OJS doesn't know, show the first letter of their name in a circle. The icon of the section that contains the current page is marked with a bar.
 - **Drawer.** A click on an icon with a submenu (Dashboards, Settings, Statistics, …) opens the whole menu over the page, with that section expanded. The page doesn't move or reflow. Icons with a direct link (e.g. Tools, Announcements) just follow the link.
 - **Recollapsing.** The drawer closes when a link in it is chosen (also when the dashboards only change the view without loading a new page), shortly after the mouse leaves it, on a click or tap outside, or with Escape.
-- **Badges.** A count in parentheses at the end of a menu entry's name (`Name (12)`) is removed from the name and shown as a badge instead, at every level of the menu. OJS shows badges before the icon or name; in the collapsed menu they sit on the icon's corner. Entries that already have a badge (such as the dashboard views, whose counts OJS loads itself) are left as they are. This is done on the server, before the page is drawn, so it works for the entries of any plugin (e.g. *My dossiers (2)* and *My dossier contributions (1)* from [Dossier Manager](https://github.com/cboulanger/ojs-dossier-manager)).
+- **Badges.** A count in parentheses at the end of a menu entry's name (`Name (12)`) is removed from the name and shown as a badge instead, at every level of the menu. In the open menu, all badges (also OJS's own) are shown after the name (OJS puts them before the icon or name); in the collapsed menu they sit on the icon's corner. Entries that already have a badge (such as the dashboard views, whose counts OJS loads itself) are left as they are. This is done on the server, before the page is drawn, so it works for the entries of any plugin (e.g. *My dossiers (2)* and *My dossier contributions (1)* from [Dossier Manager](https://github.com/cboulanger/ojs-dossier-manager)).
 - **Keep open.** The button at the top of the menu switches back to the full menu, as without the plugin, and back again. The choice is stored in the browser (`localStorage`), per user and device.
 - **Keyboard and screen readers.** The drawer opens when the keyboard focus enters the menu and closes when it leaves; Escape closes it and returns to the icon. The names stay in the page for screen readers, only hidden from view.
 - Right-to-left languages: the menu opens from the right.
