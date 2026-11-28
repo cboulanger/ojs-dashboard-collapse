@@ -21,6 +21,12 @@
  * While collapsed, hovering an icon (or the toggle button) shows its name in a
  * tooltip beside it (one element in <body>, so the menu's overflow doesn't clip
  * it), instead of the browser's small title tooltip.
+ *
+ * Mobile Dashboard (github.com/SNatangelo/ojs-mobile-dashboard) turns the menu
+ * into its own ☰ drawer on narrow screens. When it is on the page and the screen
+ * is that narrow, this plugin steps aside ("suspended"): no classes on <html>, no
+ * toggle button, and the listeners do nothing. Crossing the width without a
+ * reload switches back and forth.
  */
 (function () {
 	'use strict';
@@ -56,11 +62,43 @@
 		}
 	}
 
-	// Set the classes before the page is drawn, so that the menu doesn't jump
-	root.classList.add('dashboardCollapse');
-	root.classList.toggle('dashboardCollapse--pinned', readPinned());
+	// Mobile Dashboard takes over the menu at this width. Update this query and
+	// the heuristics below if that plugin changes.
+	const MOBILE_DASHBOARD_QUERY = '(max-width: 900px)';
+	const MOBILE_DASHBOARD_MARKERS =
+		'link[href*="/mobileDashboard/styles/mobile.css"],' +
+		'script[src*="/mobileDashboard/styles/mobile.js"],' +
+		'#mdNavToggle, #mdNavBackdrop, #app-nav[data-md-ready]';
 
-	const isCollapsed = () => !root.classList.contains('dashboardCollapse--pinned');
+	// Once found, Mobile Dashboard counts as present until the next page load
+	let mobileDashboard = false;
+
+	function mobileDashboardPresent() {
+		if (!mobileDashboard) {
+			mobileDashboard = !!document.querySelector(MOBILE_DASHBOARD_MARKERS);
+		}
+		return mobileDashboard;
+	}
+
+	const narrow = window.matchMedia ? window.matchMedia(MOBILE_DASHBOARD_QUERY) : {matches: false};
+	const shouldSuspend = () => narrow.matches && mobileDashboardPresent();
+	let suspended = false;
+
+	function activate() {
+		root.classList.add('dashboardCollapse');
+		root.classList.toggle('dashboardCollapse--pinned', readPinned());
+	}
+
+	// Set the classes before the page is drawn, so that the menu doesn't jump.
+	// Mobile Dashboard's files are in the page before this script, so it is
+	// usually found here already.
+	if (shouldSuspend()) {
+		suspended = true;
+	} else {
+		activate();
+	}
+
+	const isCollapsed = () => !suspended && !root.classList.contains('dashboardCollapse--pinned');
 	const isOpen = () => root.classList.contains('dashboardCollapse--open');
 	const nav = () => document.querySelector(NAV);
 	const TOOLTIP_ATTR = 'data-dashboard-collapse-tooltip';
@@ -140,7 +178,7 @@
 	 */
 	function decorate() {
 		const el = nav();
-		if (!el) {
+		if (!el || suspended) {
 			return;
 		}
 		el.querySelectorAll(PANEL).forEach((panel) => {
@@ -192,12 +230,53 @@
 		}
 	}
 
+	/** Hands the menu to Mobile Dashboard: nothing of this plugin stays on it. */
+	function suspend() {
+		if (suspended) {
+			return;
+		}
+		close();
+		hideTooltip();
+		suspended = true;
+		root.classList.remove('dashboardCollapse', 'dashboardCollapse--open', 'dashboardCollapse--pinned');
+		document.querySelectorAll('.dashboardCollapse__toggle').forEach((button) => button.remove());
+		// Its styles need the class on <html>: without it, it would show as text
+		if (tooltip) {
+			tooltip.remove();
+			tooltip = null;
+		}
+	}
+
+	/** Back to the collapsed (or kept open) menu, as stored in the browser. */
+	function resume() {
+		if (!suspended) {
+			return;
+		}
+		suspended = false;
+		activate();
+		decorate();
+	}
+
+	function updateMode() {
+		if (shouldSuspend()) {
+			suspend();
+		} else {
+			resume();
+		}
+	}
+
+	if (narrow.addEventListener) {
+		narrow.addEventListener('change', updateMode);
+	} else if (narrow.addListener) {
+		narrow.addListener(updateMode); // Safari before 14
+	}
+
 	document.addEventListener(
 		'click',
 		(event) => {
 			const el = nav();
 			const target = event.target;
-			if (!el || !(target instanceof Element)) {
+			if (suspended || !el || !(target instanceof Element)) {
 				return;
 			}
 			if (target.closest('.dashboardCollapse__toggle')) {
@@ -233,6 +312,9 @@
 	document.addEventListener(
 		'pointerdown',
 		(event) => {
+			if (suspended) {
+				return;
+			}
 			const el = nav();
 			pointerDown = !!el && el.contains(event.target);
 			if (isOpen() && !pointerDown) {
@@ -265,7 +347,7 @@
 	});
 
 	document.addEventListener('keydown', (event) => {
-		if (event.key !== 'Escape' || !isOpen()) {
+		if (suspended || event.key !== 'Escape' || !isOpen()) {
 			return;
 		}
 		const el = nav();
@@ -283,7 +365,7 @@
 	// Mouse: close shortly after the pointer left the drawer
 	document.addEventListener('pointerout', (event) => {
 		const el = nav();
-		if (!el || !isOpen() || event.pointerType !== 'mouse' || !el.contains(event.target)) {
+		if (suspended || !el || !isOpen() || event.pointerType !== 'mouse' || !el.contains(event.target)) {
 			return;
 		}
 		if (!event.relatedTarget || !el.contains(event.relatedTarget)) {
@@ -293,6 +375,9 @@
 	});
 
 	document.addEventListener('pointerover', (event) => {
+		if (suspended) {
+			return;
+		}
 		const el = nav();
 		if (closeTimer && el && el.contains(event.target)) {
 			cancelClose();
@@ -324,6 +409,8 @@
 			scheduled = true;
 			window.requestAnimationFrame(() => {
 				scheduled = false;
+				// Mobile Dashboard's button and backdrop appear after its script ran
+				updateMode();
 				decorate();
 			});
 		}
@@ -331,6 +418,7 @@
 
 	function start() {
 		observer.observe(document.body, {childList: true, subtree: true, characterData: true});
+		updateMode();
 		decorate();
 	}
 
