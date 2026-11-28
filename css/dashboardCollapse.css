@@ -25,7 +25,7 @@ html.dashboardCollapse #app-nav {
 	flex-direction: column;
 }
 
-.dashboardCollapse__toggle {
+html.dashboardCollapse .dashboardCollapse__toggle {
 	display: flex;
 	flex: none;
 	align-items: center;
@@ -41,12 +41,12 @@ html.dashboardCollapse #app-nav {
 	cursor: pointer;
 }
 
-.dashboardCollapse__toggle:hover {
+html.dashboardCollapse .dashboardCollapse__toggle:hover {
 	background: var(--color-hover, #0082bf);
 	color: #fff;
 }
 
-.dashboardCollapse__toggle:focus-visible {
+html.dashboardCollapse .dashboardCollapse__toggle:focus-visible {
 	outline: 2px solid var(--dashboardCollapse-primary);
 	outline-offset: -4px;
 }
@@ -159,7 +159,7 @@ html.dashboardCollapse:not(.dashboardCollapse--pinned):not(.dashboardCollapse--o
 }
 
 /* The name of an icon on hover, beside the collapsed menu */
-.dashboardCollapse__tooltip {
+html.dashboardCollapse .dashboardCollapse__tooltip {
 	position: fixed;
 	z-index: 1000;
 	max-width: 20rem;
@@ -181,11 +181,11 @@ html.dashboardCollapse:not(.dashboardCollapse--pinned):not(.dashboardCollapse--o
 	transition: opacity 0.1s ease-out, transform 0.1s ease-out, visibility 0s linear 0.1s;
 }
 
-.dashboardCollapse__tooltip--rtl {
+html.dashboardCollapse .dashboardCollapse__tooltip--rtl {
 	transform: translate(0.25rem, -50%);
 }
 
-.dashboardCollapse__tooltip--visible {
+html.dashboardCollapse .dashboardCollapse__tooltip--visible {
 	opacity: 1;
 	visibility: visible;
 	transform: translate(0, -50%);
@@ -208,8 +208,8 @@ html.dashboardCollapse--open:not(.dashboardCollapse--pinned) [dir="rtl"] #app-na
 		transition: none;
 	}
 
-	.dashboardCollapse__tooltip,
-	.dashboardCollapse__tooltip--visible {
+	html.dashboardCollapse .dashboardCollapse__tooltip,
+	html.dashboardCollapse .dashboardCollapse__tooltip--visible {
 		transition: none;
 	}
 }
